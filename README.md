@@ -300,112 +300,82 @@ this.setState(function(state, props) {
 });
 
 ```
+Atualizações de State São Mescladas
+Quando você chama setState(), o React mescla o objeto que você fornece ao state atual.
+
+Por exemplo: seu state pode conter várias variáveis independentes:
 
 ```
+ constructor(props) {
+    super(props);
+    this.state = {
+      posts: [],
+      comments: []
+    };
+  }
 ```
+Então você pode atualizá-los independentemente com chamadas separadas do setState():
+```
+ componentDidMount() {
+    fetchPosts().then(response => {
+      this.setState({
+        posts: response.posts
+      });
+    });
+
+    fetchComments().then(response => {
+      this.setState({
+        comments: response.comments
+      });
+    });
+  }
 
 ```
-```
+O merge é superficial, então this.setState({comments}) deixa this.state.posts intacto, mas substitui completamente this.state.comments
+Os Dados Fluem para Baixo
+Nem componentes pai ou filho podem saber se um determinado componente é stateful ou stateless, e não devem se importar se ele é definido por uma função ou classe.
+
+É por isso que o state é geralmente chamado de local ou encapsulado. Não é acessível a nenhum componente que não seja o que o possui e o define.
+
+Um componente pode escolher passar seu state como props para seus componentes filhos:
 
 ```
+<FormattedDate date={this.state.date} />
 ```
+ O componente FormattedDate receberia o date em seus objetos e não saberia se ele veio do state de Clock, das props do Clock, ou se foi digitado manualmente:
 
 ```
+function FormattedDate(props) {
+  return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+}
 ```
+Isso é comumente chamado de fluxo de dados “top-down” ou “unidirecional”. Qualquer state é sempre de propriedade de algum componente específico, e qualquer dado ou interface do usuário derivado desse state só pode afetar os componentes “abaixo” deles na árvore.
+
+Se você imaginar uma árvore de componentes como uma cascata de props, o state de cada componente é como uma fonte de água adicional que o une em um ponto arbitrário, mas também flui para baixo.
+
+Para mostrar que todos os componentes estão isolados, podemos criar um componente App que renderiza três <Clock>s:
 
 ```
-```
+function App() {
+  return (
+    <div>
+      <Clock />
+      <Clock />
+      <Clock />
+    </div>
+  );
+}
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root')
+);
 
 ```
-```
 
-```
-```
+Cada Clock configura seu próprio temporizador e atualiza de forma independente.
 
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
-```
-```
-
+Nos apps React, se um componente é stateful ou stateless é considerado um detalhe de implementação do componente que pode mudar com o tempo. Você pode usar componentes sem state dentro de componentes com state e vice-versa.
 
 
 
